@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "plexparty-setup"
+version = "0.1.0"
+description = ""
+authors = ["Felix Rizzolli <felix.rizzolli@outlook.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pymongo = "^4.10.1"
+
+[tool.poetry.scripts]
+load-data = "plexparty_setup.load_data:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

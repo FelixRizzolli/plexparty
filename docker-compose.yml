@@ -1,0 +1,64 @@
+services:
+
+  mongodb:
+    image: mongo:8.0
+    networks:
+      - plexparty-network
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo-data:/data/db
+
+  setup:
+    build:
+      context: ./setup
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    networks:
+      - plexparty-network
+    container_name: setup
+    volumes:
+      - ./setup:/plexparty_setup
+    working_dir: /plexparty_setup
+    environment:
+      DATABASE_URL: mongodb://root:example@mongodb:27017
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    networks:
+      - plexparty-network
+    container_name: api
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: mongodb://root:example@mongodb:27017
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    networks:
+      - plexparty-network
+    container_name: app
+    working_dir: /app
+    volumes:
+      - ./app:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"
+
+volumes:
+  mongo-data:
+
+networks:
+  plexparty-network:
+    driver: bridge
